@@ -24,10 +24,11 @@ ENV JMX_PROMETHEUS_PORT=9404
 
 EXPOSE 8080 8000 9404
 USER root
-RUN yum install -y xmlstarlet
-RUN addgroup -g 1000 -S camunda && \
-    adduser -u 1000 -S camunda -G camunda -h /camunda -s /bin/bash -D camunda
+RUN groupadd -g 1000 -r camunda && \
+    useradd --shell /bin/bash -u 1000 -g 1000 -d /camunda -r camunda
 WORKDIR /camunda
+RUN chown -R camunda:camunda /camunda
+#adduser -u 1000 -S camunda -G camunda -h /camunda -s /bin/bash -D camunda
+COPY --chown=camunda:camunda ./camunda .
 USER camunda
-COPY --chown=camunda:camunda --from=builder ./camunda .
 CMD ["./camunda.sh"]
